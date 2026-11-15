@@ -1,4 +1,4 @@
-from logging.config import fileConfig
+﻿from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import create_engine, pool
@@ -6,6 +6,9 @@ from sqlalchemy import create_engine, pool
 from app.core.config import get_settings
 from app.core.database import Base
 from app.experiments import models  # noqa: F401
+from app.experiments import federated_models  # noqa: F401
+from app.experiments import centralized_models  # noqa: F401
+from app.experiments import privacy_models  # noqa: F401
 
 # Import all ORM models here as they are introduced.
 # Example: from app.experiments import models
@@ -56,3 +59,7 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+
+
+
+
