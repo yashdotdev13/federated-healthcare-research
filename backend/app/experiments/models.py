@@ -19,9 +19,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.core.database import Base
 
 
-# ============================================================
-# ENUMS
-# ============================================================
 
 class LearningAlgorithm(str, Enum):
     CENTRALIZED = "centralized"
@@ -41,9 +38,7 @@ class ExperimentStatus(str, Enum):
     FAILED = "failed"
 
 
-# ============================================================
-# EXPERIMENT MODEL
-# ============================================================
+
 
 class Experiment(Base):
     __tablename__ = "experiments"
@@ -192,9 +187,6 @@ class Experiment(Base):
     )
 
 
-# ============================================================
-# CLIENT TRAINING METRICS MODEL
-# ============================================================
 
 class ClientTrainingMetric(Base):
     __tablename__ = "client_training_metrics"

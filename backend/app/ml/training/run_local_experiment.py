@@ -21,9 +21,6 @@ from app.ml.models.diagnostic_model import DiagnosticMLP
 logger = logging.getLogger(__name__)
 
 
-# ============================================================
-# EXPERIMENT CONFIGURATION
-# ============================================================
 
 NUM_CLIENTS = 3
 LOCAL_EPOCHS = 5
@@ -35,9 +32,6 @@ DATASET_NAME = "Wisconsin Diagnostic Breast Cancer"
 EXPERIMENT_NAME = "Initial Hospital Local Training"
 
 
-# ============================================================
-# EXPERIMENT ORCHESTRATOR
-# ============================================================
 
 def run_local_experiment() -> uuid.UUID:
     """
@@ -61,9 +55,6 @@ def run_local_experiment() -> uuid.UUID:
     experiment_id: uuid.UUID | None = None
 
     try:
-        # ----------------------------------------------------
-        # 1. Load benchmark dataset
-        # ----------------------------------------------------
 
         logger.info("Loading dataset: %s", DATASET_NAME)
 
@@ -76,10 +67,6 @@ def run_local_experiment() -> uuid.UUID:
             len(dataset.x_train),
             len(dataset.x_test),
         )
-
-        # ----------------------------------------------------
-        # 2. Partition training data across hospitals
-        # ----------------------------------------------------
 
         partitions = partition_iid(
             labels=dataset.y_train,
@@ -94,10 +81,6 @@ def run_local_experiment() -> uuid.UUID:
             "Training data partitioned across %d hospitals",
             NUM_CLIENTS,
         )
-
-        # ----------------------------------------------------
-        # 3. Create experiment record
-        # ----------------------------------------------------
 
         experiment = Experiment(
             name=EXPERIMENT_NAME,
@@ -129,9 +112,6 @@ def run_local_experiment() -> uuid.UUID:
             experiment_id,
         )
 
-        # ----------------------------------------------------
-        # 4. Initialize common starting model
-        # ----------------------------------------------------
 
         torch.manual_seed(RANDOM_SEED)
 
@@ -146,9 +126,6 @@ def run_local_experiment() -> uuid.UUID:
             for name, tensor in initial_model.state_dict().items()
         }
 
-        # ----------------------------------------------------
-        # 5. Create simulated hospital clients
-        # ----------------------------------------------------
 
         clients = [
             HospitalClient(
@@ -164,9 +141,6 @@ def run_local_experiment() -> uuid.UUID:
             len(clients),
         )
 
-        # ----------------------------------------------------
-        # 6. Execute independent local training
-        # ----------------------------------------------------
 
         training_results = []
 
@@ -195,9 +169,6 @@ def run_local_experiment() -> uuid.UUID:
                 result.accuracy,
             )
 
-            # ------------------------------------------------
-            # 7. Persist hospital training metrics
-            # ------------------------------------------------
 
             metric = ClientTrainingMetric(
                 experiment_id=experiment_id,
@@ -210,10 +181,6 @@ def run_local_experiment() -> uuid.UUID:
             )
 
             db.add(metric)
-
-        # ----------------------------------------------------
-        # 8. Validate training results
-        # ----------------------------------------------------
 
         if len(training_results) != NUM_CLIENTS:
             raise RuntimeError(
@@ -235,9 +202,6 @@ def run_local_experiment() -> uuid.UUID:
                     f"Initial global model was unexpectedly modified: {name}"
                 )
 
-        # ----------------------------------------------------
-        # 9. Complete experiment and persist metrics
-        # ----------------------------------------------------
 
         experiment = db.get(Experiment, experiment_id)
 
@@ -292,9 +256,6 @@ def run_local_experiment() -> uuid.UUID:
         db.close()
 
 
-# ============================================================
-# APPLICATION ENTRY POINT
-# ============================================================
 
 if __name__ == "__main__":
 
