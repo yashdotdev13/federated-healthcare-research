@@ -1,4 +1,3 @@
-::: {align="center"}
 # Federated Healthcare Research
 
 ### A Privacy-Aware Federated Learning Research Prototype for Healthcare Diagnosis
